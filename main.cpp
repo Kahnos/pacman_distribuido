@@ -23,4 +23,3 @@ int main(int argc, char** argv) {
     cout << "Hello Matrix";
     return 0;
 }
-

@@ -30,7 +30,7 @@ using namespace character;
 using namespace game;
 
 ALLEGRO_BITMAP *screen;
-const float FPS = 60;
+const float FPS = 30;
 const int SCREEN_W = 800;
 const int SCREEN_H = 600;
 enum MYKEYS {
@@ -109,33 +109,69 @@ int main(int argc, char **argv){
  
 		if(ev.type == ALLEGRO_EVENT_TIMER) {
 			
-			/*if (pacman.getNextDirection() != dir){
+			if (pacman.getNextDirection() != dir){
 				switch (pacman.getNextDirection()){
 					case KEY_UP:
 						if ( (pacman.getPositionX() % SPRITESIZE) == 0){
-							if(game.verifyPosition( dir, pacman.getPositionX(), pacman.getPositionY() ) ){
-								pacman.setPositionY(pacman.getPositionY()-3);
+							if(game.verifyPosition( pacman.getNextDirection(), pacman.getPositionX(), pacman.getPositionY() ) ){
+								pacman.setPositionY(pacman.getPositionY() - pacman.getSpeed());
+								key[KEY_UP] = true;
+								key[KEY_DOWN] = false;
+								key[KEY_LEFT] = false;
+								key[KEY_RIGHT] = false;
+								pacman.setNextDirection(4);
 							}
 						}
 						break;
 					
 					case KEY_DOWN:
+						if ( (pacman.getPositionX() % SPRITESIZE) == 0){
+							if(game.verifyPosition( pacman.getNextDirection(), pacman.getPositionX(), pacman.getPositionY() ) ){
+								pacman.setPositionY(pacman.getPositionY() + pacman.getSpeed());
+								key[KEY_UP] = false;
+								key[KEY_DOWN] = true;
+								key[KEY_LEFT] = false;
+								key[KEY_RIGHT] = false;
+								pacman.setNextDirection(4);
+							}
+						}
 						break;
 					
 					case KEY_LEFT:
+						
+						if ( (pacman.getPositionY() % SPRITESIZE) == 0){
+							if(game.verifyPosition( pacman.getNextDirection(), pacman.getPositionX(), pacman.getPositionY() ) ){
+								pacman.setPositionX(pacman.getPositionX() - pacman.getSpeed());
+								key[KEY_UP] = false;
+								key[KEY_DOWN] = false;
+								key[KEY_LEFT] = true;
+								key[KEY_RIGHT] = false;
+								pacman.setNextDirection(4);
+							}
+						}
 						break;
 					
 					case KEY_RIGHT:
+						if ( (pacman.getPositionY() % SPRITESIZE) == 0){
+							if(game.verifyPosition( pacman.getNextDirection(), pacman.getPositionX(), pacman.getPositionY() ) ){
+								pacman.setPositionX(pacman.getPositionX() + pacman.getSpeed());
+								key[KEY_UP] = false;
+								key[KEY_DOWN] = false;
+								key[KEY_LEFT] = false;
+								key[KEY_RIGHT] = true;
+								pacman.setNextDirection(4);
+							}
+						}
 						break;
 				}
-			}*/
+			}
 			
 			if(key[KEY_UP]) {
 				dir = KEY_UP;
 				
 				if ( (pacman.getPositionX() % SPRITESIZE) == 0){
 					if(game.verifyPosition( dir, pacman.getPositionX(), pacman.getPositionY() ) ){
-						pacman.setPositionY(pacman.getPositionY()-3);
+						pacman.setPositionY(pacman.getPositionY() - pacman.getSpeed());
 					}
 				}
 				
@@ -146,7 +182,7 @@ int main(int argc, char **argv){
 				
 				if ( (pacman.getPositionX() % SPRITESIZE) == 0){
 					if(game.verifyPosition(dir, pacman.getPositionX(), pacman.getPositionY())){
-						pacman.setPositionY(pacman.getPositionY()+3);
+						pacman.setPositionY(pacman.getPositionY() + pacman.getSpeed());
 					}
 				}
 				
@@ -160,7 +196,7 @@ int main(int argc, char **argv){
 				}
 				else if ( (pacman.getPositionY() % SPRITESIZE) == 0){
 					if(game.verifyPosition(dir, pacman.getPositionX(), pacman.getPositionY())){
-						pacman.setPositionX(pacman.getPositionX()-3);	
+						pacman.setPositionX(pacman.getPositionX() - pacman.getSpeed());	
 					}
 				}
 			}
@@ -173,7 +209,7 @@ int main(int argc, char **argv){
 				}
 				if ( (pacman.getPositionY() % SPRITESIZE) == 0){
 					if (game.verifyPosition(dir, pacman.getPositionX(), pacman.getPositionY())){
-						pacman.setPositionX(pacman.getPositionX()+3);
+						pacman.setPositionX(pacman.getPositionX() + pacman.getSpeed());
 					}
 				}
 				
@@ -197,37 +233,43 @@ int main(int argc, char **argv){
 		else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch(ev.keyboard.keycode) {
 				case ALLEGRO_KEY_UP:
-//					if ( !(key[KEY_LEFT]) && !(key[KEY_RIGHT]) ){
+					if ( !(key[KEY_LEFT]) && !(key[KEY_RIGHT]) ){
 						key[KEY_UP] = true;
 						key[KEY_DOWN] = false;
 						key[KEY_LEFT] = false;
 						key[KEY_RIGHT] = false;
-//					}
+					}
 					pacman.setNextDirection(KEY_UP);
 					break;
 
 				case ALLEGRO_KEY_DOWN:
-//					if ( !(key[KEY_LEFT]) && !(key[KEY_RIGHT]) ){
+					if ( !(key[KEY_LEFT]) && !(key[KEY_RIGHT]) ){
 						key[KEY_DOWN] = true;
 						key[KEY_UP] = false;
 						key[KEY_LEFT] = false;
 						key[KEY_RIGHT] = false;
-//					}
+					}
 					pacman.setNextDirection(KEY_DOWN);
 					break;
 
 				case ALLEGRO_KEY_LEFT: 
-					key[KEY_LEFT] = true;
-					key[KEY_UP] = false;
-					key[KEY_DOWN] = false;
-					key[KEY_RIGHT] = false;
+					if ( !(key[KEY_UP]) && !(key[KEY_DOWN]) ){
+						key[KEY_LEFT] = true;
+						key[KEY_UP] = false;
+						key[KEY_DOWN] = false;
+						key[KEY_RIGHT] = false;
+					}
+					pacman.setNextDirection(KEY_LEFT);
 					break;
 
 				case ALLEGRO_KEY_RIGHT:
-					key[KEY_RIGHT] = true;
-					key[KEY_UP] = false;
-					key[KEY_DOWN] = false;
-					key[KEY_LEFT] = false;
+					if ( !(key[KEY_UP]) && !(key[KEY_DOWN]) ){
+						key[KEY_RIGHT] = true;
+						key[KEY_UP] = false;
+						key[KEY_DOWN] = false;
+						key[KEY_LEFT] = false;
+					}
+					pacman.setNextDirection(KEY_RIGHT);
 					break;
 
 				case ALLEGRO_KEY_ESCAPE:

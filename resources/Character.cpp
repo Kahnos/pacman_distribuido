@@ -30,6 +30,7 @@ Character::Character(string characterName) {
 	al_init_image_addon();
 	alive = true;
 	eatable = false;
+	nextDirection = 4; 
 	loadSprites(characterName);
 }
 
@@ -140,7 +141,7 @@ void Character::loadSprites(string characterName){
 	al_init_image_addon();
 	if (characterName == "pacman"){
 		this->name = pacman;
-		speed = 10;
+		speed = 6;
 		positionX = 18;
 		positionY = 252;
 		

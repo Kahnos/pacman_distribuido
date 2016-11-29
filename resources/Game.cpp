@@ -12,10 +12,18 @@
  */
 
 #include "Game.h"
+#include <cstdlib>
+#include <iostream>
+#include <stdio.h>
+#include <string>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_image.h>
 
 #define COL 29 //Cantidad de columnas
 #define ROW 32 //Cantidad de filas
 #define SPRITESIZE 18 //Tamaño de los sprites
+#define PACMOV 3 //Movimiento de pacman
 
 using namespace game;
 
@@ -121,21 +129,21 @@ void Game::drawMaze(){
 		for (int j = 0; j < COL; j++){
 			if (maze[i][j] == 'X'){
 				al_draw_scaled_bitmap(block, 0, 0, 24, 24,
-					(j*SPRITESIZE)+SPRITESIZE, (i*SPRITESIZE)+SPRITESIZE, SPRITESIZE, SPRITESIZE, 0);
+					(j*SPRITESIZE), (i*SPRITESIZE), SPRITESIZE, SPRITESIZE, 0);
 			}
 			if (maze[i][j] == '.'){
-				al_draw_filled_circle((j*SPRITESIZE)+SPRITESIZE+SPRITESIZE/2, (i*SPRITESIZE)+SPRITESIZE+SPRITESIZE/2, 1.5, al_map_rgb(255,255,255));
+				al_draw_filled_circle((j*SPRITESIZE)+SPRITESIZE/2, (i*SPRITESIZE)+SPRITESIZE/2, 1.5, al_map_rgb(255,255,255));
 			}
 			if (maze[i][j] == 'p'){
-				al_draw_filled_circle((j*SPRITESIZE)+SPRITESIZE+SPRITESIZE/2, (i*SPRITESIZE)+SPRITESIZE+SPRITESIZE/2, 4, al_map_rgb(255,255,255));
+				al_draw_filled_circle((j*SPRITESIZE)+SPRITESIZE/2, (i*SPRITESIZE)+SPRITESIZE/2, 4, al_map_rgb(255,255,255));
 			}
 			if (maze[i][j] == 's'){
 				al_draw_scaled_bitmap(strawberry, 0, 0, 24, 24,
-					(j*SPRITESIZE)+SPRITESIZE, (i*SPRITESIZE)+SPRITESIZE, SPRITESIZE, SPRITESIZE, 0);
+					(j*SPRITESIZE), (i*SPRITESIZE), SPRITESIZE, SPRITESIZE, 0);
 			}
 			if (maze[i][j] == 'o'){
 				al_draw_scaled_bitmap(orange, 0, 0, 24, 24,
-					(j*SPRITESIZE)+SPRITESIZE, (i*SPRITESIZE)+SPRITESIZE, SPRITESIZE, SPRITESIZE, 0);
+					(j*SPRITESIZE), (i*SPRITESIZE), SPRITESIZE, SPRITESIZE, 0);
 			}
 		}
 	}
@@ -150,4 +158,60 @@ void Game::setFruit(int row, int col, char f){
 	if ((maze[row][col] != 'X') && (maze[row][col] != '.')){
 		maze[row][col] = f;
 	}
+}
+
+bool Game::verifyPosition(unsigned char dir, unsigned short posX, unsigned short posY/*, unsigned char nextDirection*/){
+	float base;
+	unsigned short newX;
+	unsigned short newY;
+	
+	
+	switch(dir){
+		
+		//UP
+		case 0: 
+			if( (posY % SPRITESIZE) == 0 ){
+				base = posY/SPRITESIZE;
+			}
+			else{
+				base = (posY / SPRITESIZE) +1;
+				
+			}
+			newX = posX/SPRITESIZE;
+			newY = (short)base -1;
+			break;
+		
+		//DOWN
+		case 1:	
+
+			base = posY/SPRITESIZE;
+			newX = posX/SPRITESIZE;
+			newY = (short)base +1;
+			break;
+		
+		//LEFT	
+		case 2:	
+			if( (posX % SPRITESIZE) == 0 ){
+				base = posX/SPRITESIZE;
+			}
+			else{
+				base = (posX / SPRITESIZE) +1;
+				
+			}
+			newY = posY/SPRITESIZE;
+			newX = (short)base -1;
+			break;
+			
+		//RIGHT	
+		case 3:	
+			base = posX/SPRITESIZE;
+			newY = posY/SPRITESIZE;
+			newX = (short)base +1;
+			break;
+	}
+
+	if (maze[newY][newX] != 'X')
+		return true;
+	
+	return false;
 }

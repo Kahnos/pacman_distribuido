@@ -28,7 +28,6 @@ Character::Character() {
 Character::Character(string characterName) {
 	al_init();
 	al_init_image_addon();
-	direction = none;
 	alive = true;
 	eatable = false;
 	loadSprites(characterName);
@@ -58,6 +57,9 @@ void Character::setDirection(){
 }
 void Character::setSpeed(float speed){
 	this->speed = speed;
+}
+void Character::setNextDirection(unsigned char nextDirection){
+	this->nextDirection = nextDirection;
 }
 
 string Character::getName(){
@@ -89,24 +91,20 @@ string Character::getName(){
 string Character::getDirection(){
 	string characterDirection;
 	switch (direction){
-		case up:
+		case UP:
 			characterDirection = "up";
 			break;
-		
-		case down:
+			
+		case DOWN:
 			characterDirection = "down";
 			break;
 			
-		case left:
+		case LEFT:
 			characterDirection = "left";
 			break;
 			
-		case right:
+		case RIGHT:
 			characterDirection = "right";
-			break;
-		
-		case none:
-			characterDirection = "none";
 			break;
 	}
 	return characterDirection;
@@ -128,9 +126,14 @@ bool Character::getAlive(){
 	return alive;
 }
 
+unsigned char Character::getNextDirection(){
+	return nextDirection;
+}
+
 bool Character::getEatable(){
 	return eatable;
 }
+
 
 void Character::loadSprites(string characterName){
 	al_init();
@@ -138,8 +141,8 @@ void Character::loadSprites(string characterName){
 	if (characterName == "pacman"){
 		this->name = pacman;
 		speed = 10;
-		positionX = 36;
-		positionY = 36;
+		positionX = 18;
+		positionY = 252;
 		
 		sprites[0][0]= al_load_bitmap("resources/sprites/pacman/pacmanUp1.png");
 		sprites[0][1]= al_load_bitmap("resources/sprites/pacman/pacmanDown1.png");

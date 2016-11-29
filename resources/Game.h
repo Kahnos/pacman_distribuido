@@ -57,6 +57,7 @@ namespace game {
         void setFruit(int row, int col, char f);
         void drawMaze();
         void drawCharacter(unsigned short posX,unsigned short posY, ALLEGRO_BITMAP *sprite);
+        bool verifyPosition(unsigned char dir, unsigned short posX, unsigned short posY);
         
     private:
         ALLEGRO_BITMAP *block;

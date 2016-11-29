@@ -34,11 +34,10 @@ namespace character {
         };
 
         enum Direction {
-            up,
-            down,
-            left,
-            right,
-            none
+            UP,
+            DOWN,
+            LEFT,
+            RIGHT
         };
 
         Character();
@@ -47,6 +46,7 @@ namespace character {
         ALLEGRO_BITMAP * getSprite(int row, int col);
         string getName();
         string getDirection();
+        unsigned char getNextDirection();
         float getSpeed();
         unsigned short getPositionX();
         unsigned short getPositionY();
@@ -59,6 +59,7 @@ namespace character {
         void setEatable(bool eatable);
         void setDirection();
         void setSpeed(float speed);
+        void setNextDirection(unsigned char nextDirection);
 
     private:
         Name name;
@@ -69,6 +70,7 @@ namespace character {
         bool alive;
         bool eatable;
         ALLEGRO_BITMAP *sprites[3][6];
+        unsigned char nextDirection;
     };
 }
 

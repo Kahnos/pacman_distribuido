@@ -20,6 +20,8 @@
 #include <allegro5/allegro_image.h>
 #include "resources/Character.h"
 #include "resources/Game.h"
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 
 #define COL 29 //Cantidad de columnas
 #define ROW 32 //Cantidad de filas
@@ -53,6 +55,7 @@ int main(int argc, char **argv){
 	int frameCount = 0;
 	int frameDelay = 1;
 	unsigned char dir = 0;
+	unsigned char mazeCell = 0;
    
 	Character pacman = Character("pacman");
    
@@ -78,6 +81,9 @@ int main(int argc, char **argv){
 	//Inicialización de la biblioteca para imágenes
 	al_init_image_addon();
  
+	al_init_font_addon(); // initialize the font addon
+	al_init_ttf_addon();// initialize the ttf (True Type Font) addon
+	
 	display = al_create_display(SCREEN_W, SCREEN_H);
 	if(!display) {
 		fprintf(stderr, "failed to create display!\n");
@@ -94,6 +100,15 @@ int main(int argc, char **argv){
 		al_destroy_timer(timer);
 		return -1;
 	}
+	
+	ALLEGRO_FONT *font = al_load_ttf_font("resources/8bitOperatorPlus8-Bold.ttf",20,0 );
+ 
+   if (!font){
+      fprintf(stderr, "Could not load '8bitOperatorPlus8-Bold.ttf'.\n");
+      return -1;
+   }
+ 
+	
  
 	al_register_event_source(event_queue, al_get_display_event_source(display));
  
@@ -222,6 +237,8 @@ int main(int argc, char **argv){
 
 				frameCount = 0;
 			}
+			
+			game.verifyMaze(dir, pacman.getPositionX(), pacman.getPositionY());
  
 			redraw = true;
 		}
@@ -283,11 +300,10 @@ int main(int argc, char **argv){
 
 			al_clear_to_color(al_map_rgb(0,0,0));
 
-			game.setFruit(1,1,'s');
-
 			game.drawMaze();
 			game.drawCharacter(pacman.getPositionX(),pacman.getPositionY(),pacman.getSprite(curFrame,dir));
-
+			al_draw_text(font, al_map_rgb(255,255,255), 620, 54, ALLEGRO_ALIGN_CENTRE, "SCORE");
+			al_draw_text(font, al_map_rgb(255,255,255), 620, 92, ALLEGRO_ALIGN_CENTRE, to_string(game.getScore()).c_str());
 			al_flip_display();
 		}
 	}

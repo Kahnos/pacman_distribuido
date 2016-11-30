@@ -143,7 +143,7 @@ void Character::loadSprites(string characterName){
 		this->name = pacman;
 		speed = 6;
 		positionX = 18;
-		positionY = 252;
+		positionY = 90;
 		
 		sprites[0][0]= al_load_bitmap("resources/sprites/pacman/pacmanUp1.png");
 		sprites[0][1]= al_load_bitmap("resources/sprites/pacman/pacmanDown1.png");

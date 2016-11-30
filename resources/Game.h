@@ -24,6 +24,8 @@
 #define ROW 32 //Cantidad de filas
 #define SPRITESIZE 18 //Tamaño de los sprites
 
+using namespace character;
+
 namespace game {
     class Game {
     public:
@@ -58,6 +60,9 @@ namespace game {
         void drawMaze();
         void drawCharacter(unsigned short posX,unsigned short posY, ALLEGRO_BITMAP *sprite);
         bool verifyPosition(unsigned char dir, unsigned short posX, unsigned short posY);
+        void verifyMaze(unsigned char dir, unsigned short posX, unsigned short posY);
+        void eatableGhosts();
+        
         
     private:
         ALLEGRO_BITMAP *block;
@@ -70,6 +75,7 @@ namespace game {
         unsigned char powerbar;
         Status status;
         ActivePower activePower;
+        Character characters[5];
         char maze[ROW][COL]= {
 	"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 	"X............XX............X",

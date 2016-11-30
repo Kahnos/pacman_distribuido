@@ -24,10 +24,13 @@
 #define ROW 32 //Cantidad de filas
 #define SPRITESIZE 18 //Tamaño de los sprites
 #define PACMOV 3 //Movimiento de pacman
+#define PACDOTSPOINTS 10 //Puntos por comer un pacdot
+#define PPPOINTS 15 //Puntos por comer una powerpellet
 
 using namespace game;
 
 Game::Game(){
+	
 	al_init();
 	al_init_image_addon();
 	
@@ -36,6 +39,17 @@ Game::Game(){
 	apple = al_load_bitmap("resources/sprites/fruits/apple.png");
 	orange = al_load_bitmap("resources/sprites/fruits/orange.png");
 	strawberry = al_load_bitmap("resources/sprites/fruits/strawberry.png");
+	
+	score = 0;
+	lives = 3;
+	powerbar = 0;
+	
+	characters[Character::pacman] = Character("pacman");
+	characters[Character::clyde] = Character("clyde");
+	characters[Character::blinky] = Character("blinky");
+	characters[Character::pinky] = Character("pinky");
+	characters[Character::inky] = Character("inky");
+	
 }
 
 Game::~Game() {
@@ -160,11 +174,10 @@ void Game::setFruit(int row, int col, char f){
 	}
 }
 
-bool Game::verifyPosition(unsigned char dir, unsigned short posX, unsigned short posY/*, unsigned char nextDirection*/){
+bool Game::verifyPosition(unsigned char dir, unsigned short posX, unsigned short posY){
 	float base;
 	unsigned short newX;
 	unsigned short newY;
-	
 	
 	switch(dir){
 		
@@ -214,4 +227,75 @@ bool Game::verifyPosition(unsigned char dir, unsigned short posX, unsigned short
 		return true;
 	
 	return false;
+}
+
+void Game::verifyMaze(unsigned char dir, unsigned short posX, unsigned short posY){
+	float base;
+	unsigned short col;
+	unsigned short row;
+	
+	switch(dir){
+		
+		//UP
+		case 0: 
+			if( (posY % SPRITESIZE) == 0 ){
+				base = posY/SPRITESIZE;
+			}
+			else{
+				base = (posY / SPRITESIZE) +1;
+				
+			}
+			col = posX/SPRITESIZE;
+			row = (short)base;
+			break;
+		
+		//DOWN
+		case 1:	
+
+			base = posY/SPRITESIZE;
+			col = posX/SPRITESIZE;
+			row = (short)base;
+			break;
+		
+		//LEFT	
+		case 2:	
+			if( (posX % SPRITESIZE) == 0 ){
+				base = posX/SPRITESIZE;
+			}
+			else{
+				base = (posX / SPRITESIZE);
+				
+			}
+			row = posY/SPRITESIZE;
+			col = (short)base;
+			break;
+			
+		//RIGHT	
+		case 3:	
+			base = posX/SPRITESIZE;
+			row = posY/SPRITESIZE;
+			col = (short)base;
+			break;
+	}
+
+	switch (maze[row][col]){
+		case 'p':
+			maze[row][col] = ' ';
+			score = score + PPPOINTS;
+			eatableGhosts();
+			break;
+		
+		case '.':
+			maze[row][col] = ' ';
+			score = score + PACDOTSPOINTS;
+			break;
+	}
+	
+}
+
+void Game::eatableGhosts(){
+	characters[Character::clyde].setEatable(true);
+	characters[Character::blinky].setEatable(true);
+	characters[Character::pinky].setEatable(true);
+	characters[Character::inky].setEatable(true);
 }

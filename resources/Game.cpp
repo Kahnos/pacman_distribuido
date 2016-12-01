@@ -164,8 +164,9 @@ void Game::drawMaze(){
 	
 }
 
-void Game::drawCharacter(unsigned short posX, unsigned short posY, ALLEGRO_BITMAP *sprite){
-	al_draw_scaled_bitmap(sprite, 0, 0, 24, 24, posX, posY, SPRITESIZE, SPRITESIZE, 0);
+void Game::drawCharacter(Character::Name name, int curFrame){
+	al_draw_scaled_bitmap(characters[name].getSprite(curFrame, characters[name].getActiveDirection()),
+		0, 0, 24, 24, characters[name].getPositionX(), characters[name].getPositionY(), SPRITESIZE, SPRITESIZE, 0);
 }
 
 void Game::setFruit(int row, int col, char f){
@@ -229,51 +230,58 @@ bool Game::verifyPosition(unsigned char dir, unsigned short posX, unsigned short
 	return false;
 }
 
-void Game::verifyMaze(unsigned char dir, unsigned short posX, unsigned short posY){
+void Game::eatableGhosts(bool eatable){
+	characters[Character::clyde].setEatable(eatable);
+	characters[Character::blinky].setEatable(eatable);
+	characters[Character::pinky].setEatable(eatable);
+	characters[Character::inky].setEatable(eatable);
+}
+
+void Game::verifyMaze(){
 	float base;
 	unsigned short col;
 	unsigned short row;
 	
-	switch(dir){
+	switch(characters[Character::pacman].getActiveDirection()){
 		
 		//UP
 		case 0: 
-			if( (posY % SPRITESIZE) == 0 ){
-				base = posY/SPRITESIZE;
+			if( (characters[Character::pacman].getPositionY() % SPRITESIZE) == 0 ){
+				base = characters[Character::pacman].getPositionY()/SPRITESIZE;
 			}
 			else{
-				base = (posY / SPRITESIZE) +1;
+				base = (characters[Character::pacman].getPositionY() / SPRITESIZE) +1;
 				
 			}
-			col = posX/SPRITESIZE;
+			col = characters[Character::pacman].getPositionX()/SPRITESIZE;
 			row = (short)base;
 			break;
 		
 		//DOWN
 		case 1:	
 
-			base = posY/SPRITESIZE;
-			col = posX/SPRITESIZE;
+			base = characters[Character::pacman].getPositionY()/SPRITESIZE;
+			col = characters[Character::pacman].getPositionX()/SPRITESIZE;
 			row = (short)base;
 			break;
 		
 		//LEFT	
 		case 2:	
-			if( (posX % SPRITESIZE) == 0 ){
-				base = posX/SPRITESIZE;
+			if( (characters[Character::pacman].getPositionX() % SPRITESIZE) == 0 ){
+				base = characters[Character::pacman].getPositionX()/SPRITESIZE;
 			}
 			else{
-				base = (posX / SPRITESIZE);
+				base = (characters[Character::pacman].getPositionX() / SPRITESIZE);
 				
 			}
-			row = posY/SPRITESIZE;
+			row = characters[Character::pacman].getPositionY()/SPRITESIZE;
 			col = (short)base;
 			break;
 			
 		//RIGHT	
 		case 3:	
-			base = posX/SPRITESIZE;
-			row = posY/SPRITESIZE;
+			base = characters[Character::pacman].getPositionX()/SPRITESIZE;
+			row = characters[Character::pacman].getPositionY()/SPRITESIZE;
 			col = (short)base;
 			break;
 	}
@@ -282,7 +290,7 @@ void Game::verifyMaze(unsigned char dir, unsigned short posX, unsigned short pos
 		case 'p':
 			maze[row][col] = ' ';
 			score = score + PPPOINTS;
-			eatableGhosts();
+			eatableGhosts(true);
 			break;
 		
 		case '.':
@@ -293,9 +301,130 @@ void Game::verifyMaze(unsigned char dir, unsigned short posX, unsigned short pos
 	
 }
 
-void Game::eatableGhosts(){
-	characters[Character::clyde].setEatable(true);
-	characters[Character::blinky].setEatable(true);
-	characters[Character::pinky].setEatable(true);
-	characters[Character::inky].setEatable(true);
+void Game::move(Character::Name name){
+	if (characters[name].getNextDirection() != characters[name].getActiveDirection() ){
+				switch (characters[name].getNextDirection()){
+					case Character::UP:
+						cout<<"nextDir up"<<endl;
+						if ( (characters[name].getPositionX() % SPRITESIZE) == 0){
+							if(verifyPosition( characters[name].getNextDirection(), characters[name].getPositionX(), characters[name].getPositionY() ) ){
+								characters[name].setPositionY(characters[name].getPositionY() - characters[name].getSpeed());
+								characters[name].setDirection(Character::UP);
+								characters[name].setNextDirection(4);
+							}
+						}
+						break;
+				
+					case Character::DOWN:
+						if ( (characters[name].getPositionX() % SPRITESIZE) == 0){
+							if(verifyPosition( characters[name].getNextDirection(), characters[name].getPositionX(), characters[name].getPositionY() ) ){
+								characters[name].setPositionY(characters[name].getPositionY() + characters[name].getSpeed());
+								characters[name].setDirection(Character::DOWN);
+								characters[name].setNextDirection(4);
+							}
+						}
+						break;
+					
+					case Character::LEFT:
+						
+						if ( (characters[name].getPositionY() % SPRITESIZE) == 0){
+							if(verifyPosition( characters[name].getNextDirection(), characters[name].getPositionX(), characters[name].getPositionY() ) ){
+								characters[name].setPositionX(characters[name].getPositionX() - characters[name].getSpeed());
+								characters[name].setDirection(Character::LEFT);
+								characters[name].setNextDirection(4);
+							}
+						}
+						break;
+					
+					case Character::RIGHT:
+						if ( (characters[name].getPositionY() % SPRITESIZE) == 0){
+							if(verifyPosition( characters[name].getNextDirection(), characters[name].getPositionX(), characters[name].getPositionY() ) ){
+								characters[name].setPositionX(characters[name].getPositionX() + characters[name].getSpeed());
+								characters[name].setDirection(Character::RIGHT);
+								characters[name].setNextDirection(4);
+							}
+						}
+						break;
+				}
+			}
+			
+			if(characters[name].getDirection(Character::UP)) {
+				
+				
+				if ( (characters[name].getPositionX() % SPRITESIZE) == 0){
+					if(verifyPosition( Character::UP, characters[name].getPositionX(), characters[name].getPositionY() ) ){
+						characters[name].setPositionY(characters[name].getPositionY() - characters[name].getSpeed());
+					}
+				}
+				
+			}
+ 
+			if(characters[name].getDirection(Character::DOWN)) {
+				
+				if ( (characters[name].getPositionX() % SPRITESIZE) == 0){
+					if(verifyPosition(Character::DOWN, characters[name].getPositionX(), characters[name].getPositionY())){
+						characters[name].setPositionY(characters[name].getPositionY() + characters[name].getSpeed());
+					}
+				}
+				
+			}
+
+			 if(characters[name].getDirection(Character::LEFT)) {
+				
+				if ( (characters[name].getPositionY() == 252) && (characters[name].getPositionX() <= 0 ) ){
+					characters[name].setPositionX(486);
+				}
+				else if ( (characters[name].getPositionY() % SPRITESIZE) == 0){
+					if(verifyPosition(Character::LEFT, characters[name].getPositionX(), characters[name].getPositionY())){
+						characters[name].setPositionX(characters[name].getPositionX() - characters[name].getSpeed());	
+					}
+				}
+			}
+
+			if(characters[name].getDirection(Character::RIGHT)) {
+				
+				if ( (characters[name].getPositionY() == 252) && (characters[name].getPositionX() >= 486 ) ){
+					characters[name].setPositionX(0);
+				}
+				if ( (characters[name].getPositionY() % SPRITESIZE) == 0){
+					if (verifyPosition(Character::RIGHT, characters[name].getPositionX(), characters[name].getPositionY())){
+						characters[name].setPositionX(characters[name].getPositionX() + characters[name].getSpeed());
+					}
+				}
+				
+			}
+	
 }
+
+void Game::setCharacterDirection(Character::Name name, Character::Direction dir){
+	switch(dir){
+		case Character::UP:
+			if ( !(characters[name].getDirection(Character::LEFT)) && !(characters[name].getDirection(Character::RIGHT)) ){
+				characters[name].setDirection(Character::UP);
+			}
+			characters[name].setNextDirection(Character::UP);
+			break;
+		
+		case Character::DOWN:
+			if ( !(characters[name].getDirection(Character::LEFT)) && !(characters[name].getDirection(Character::RIGHT)) ){
+				characters[name].setDirection(Character::DOWN);
+			}
+			characters[name].setNextDirection(Character::DOWN);
+			break;
+			
+		case Character::LEFT:
+			if ( !(characters[name].getDirection(Character::UP)) && !(characters[name].getDirection(Character::DOWN)) ){
+				characters[name].setDirection(Character::LEFT);
+			}
+			characters[name].setNextDirection(Character::LEFT);
+			break;
+			
+		case Character::RIGHT:
+			if ( !(characters[name].getDirection(Character::UP)) && !(characters[name].getDirection(Character::DOWN)) ){
+				characters[name].setDirection(Character::RIGHT);
+			}
+			characters[name].setNextDirection(Character::RIGHT);
+			break;
+	}
+}
+

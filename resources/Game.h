@@ -58,11 +58,12 @@ namespace game {
         void setMazeCell(int row, int col, char value);
         void setFruit(int row, int col, char f);
         void drawMaze();
-        void drawCharacter(unsigned short posX,unsigned short posY, ALLEGRO_BITMAP *sprite);
+        void drawCharacter(Character::Name name, int curFrame);
         bool verifyPosition(unsigned char dir, unsigned short posX, unsigned short posY);
-        void verifyMaze(unsigned char dir, unsigned short posX, unsigned short posY);
-        void eatableGhosts();
-        
+        void verifyMaze();
+        void eatableGhosts(bool eatable);
+        void move(Character::Name name);
+        void setCharacterDirection(Character::Name name,  Character::Direction dir);
         
     private:
         ALLEGRO_BITMAP *block;

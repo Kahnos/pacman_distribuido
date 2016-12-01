@@ -50,14 +50,12 @@ int main(int argc, char **argv){
 	bool doexit = false;
    
 	//Animation
-	const int maxFrame = 3;
+	const int maxFrame = 2;
+	const int pacMaxFrame = 3;
 	int curFrame = 0;
 	int frameCount = 0;
 	int frameDelay = 1;
 	unsigned char dir = 0;
-	unsigned char mazeCell = 0;
-   
-	Character pacman = Character("pacman");
    
 	Game game = Game();
    
@@ -124,112 +122,19 @@ int main(int argc, char **argv){
  
 		if(ev.type == ALLEGRO_EVENT_TIMER) {
 			
-			if (pacman.getNextDirection() != dir){
-				switch (pacman.getNextDirection()){
-					case KEY_UP:
-						if ( (pacman.getPositionX() % SPRITESIZE) == 0){
-							if(game.verifyPosition( pacman.getNextDirection(), pacman.getPositionX(), pacman.getPositionY() ) ){
-								pacman.setPositionY(pacman.getPositionY() - pacman.getSpeed());
-								key[KEY_UP] = true;
-								key[KEY_DOWN] = false;
-								key[KEY_LEFT] = false;
-								key[KEY_RIGHT] = false;
-								pacman.setNextDirection(4);
-							}
-						}
-						break;
-					
-					case KEY_DOWN:
-						if ( (pacman.getPositionX() % SPRITESIZE) == 0){
-							if(game.verifyPosition( pacman.getNextDirection(), pacman.getPositionX(), pacman.getPositionY() ) ){
-								pacman.setPositionY(pacman.getPositionY() + pacman.getSpeed());
-								key[KEY_UP] = false;
-								key[KEY_DOWN] = true;
-								key[KEY_LEFT] = false;
-								key[KEY_RIGHT] = false;
-								pacman.setNextDirection(4);
-							}
-						}
-						break;
-					
-					case KEY_LEFT:
-						
-						if ( (pacman.getPositionY() % SPRITESIZE) == 0){
-							if(game.verifyPosition( pacman.getNextDirection(), pacman.getPositionX(), pacman.getPositionY() ) ){
-								pacman.setPositionX(pacman.getPositionX() - pacman.getSpeed());
-								key[KEY_UP] = false;
-								key[KEY_DOWN] = false;
-								key[KEY_LEFT] = true;
-								key[KEY_RIGHT] = false;
-								pacman.setNextDirection(4);
-							}
-						}
-						break;
-					
-					case KEY_RIGHT:
-						if ( (pacman.getPositionY() % SPRITESIZE) == 0){
-							if(game.verifyPosition( pacman.getNextDirection(), pacman.getPositionX(), pacman.getPositionY() ) ){
-								pacman.setPositionX(pacman.getPositionX() + pacman.getSpeed());
-								key[KEY_UP] = false;
-								key[KEY_DOWN] = false;
-								key[KEY_LEFT] = false;
-								key[KEY_RIGHT] = true;
-								pacman.setNextDirection(4);
-							}
-						}
-						break;
-				}
+			game.move(Character::pacman);
+			game.move(Character::clyde);
+			
+			//Lleva el control del cambio de los sprites de pacman para simular el movimiento
+			if(++frameCount >= frameDelay)
+			{
+				if(++curFrame >= pacMaxFrame)
+					curFrame = 0;
+
+				frameCount = 0;
 			}
 			
-			if(key[KEY_UP]) {
-				dir = KEY_UP;
-				
-				if ( (pacman.getPositionX() % SPRITESIZE) == 0){
-					if(game.verifyPosition( dir, pacman.getPositionX(), pacman.getPositionY() ) ){
-						pacman.setPositionY(pacman.getPositionY() - pacman.getSpeed());
-					}
-				}
-				
-			}
- 
-			if(key[KEY_DOWN]) {
-				dir = KEY_DOWN;
-				
-				if ( (pacman.getPositionX() % SPRITESIZE) == 0){
-					if(game.verifyPosition(dir, pacman.getPositionX(), pacman.getPositionY())){
-						pacman.setPositionY(pacman.getPositionY() + pacman.getSpeed());
-					}
-				}
-				
-			}
-
-			 if(key[KEY_LEFT]) {
-				dir = KEY_LEFT;
-				
-				if ( (pacman.getPositionY() == 252) && (pacman.getPositionX() <= 0 ) ){
-					pacman.setPositionX(486);
-				}
-				else if ( (pacman.getPositionY() % SPRITESIZE) == 0){
-					if(game.verifyPosition(dir, pacman.getPositionX(), pacman.getPositionY())){
-						pacman.setPositionX(pacman.getPositionX() - pacman.getSpeed());	
-					}
-				}
-			}
-
-			if(key[KEY_RIGHT]) {
-				dir = KEY_RIGHT;
-				
-				if ( (pacman.getPositionY() == 252) && (pacman.getPositionX() >= 486 ) ){
-					pacman.setPositionX(0);
-				}
-				if ( (pacman.getPositionY() % SPRITESIZE) == 0){
-					if (game.verifyPosition(dir, pacman.getPositionX(), pacman.getPositionY())){
-						pacman.setPositionX(pacman.getPositionX() + pacman.getSpeed());
-					}
-				}
-				
-			}
-			
+			//Lleva el control del cambio de los sprites de los fantasmas para simular el movimiento
 			if(++frameCount >= frameDelay)
 			{
 				if(++curFrame >= maxFrame)
@@ -238,7 +143,7 @@ int main(int argc, char **argv){
 				frameCount = 0;
 			}
 			
-			game.verifyMaze(dir, pacman.getPositionX(), pacman.getPositionY());
+			game.verifyMaze();
  
 			redraw = true;
 		}
@@ -250,43 +155,23 @@ int main(int argc, char **argv){
 		else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch(ev.keyboard.keycode) {
 				case ALLEGRO_KEY_UP:
-					if ( !(key[KEY_LEFT]) && !(key[KEY_RIGHT]) ){
-						key[KEY_UP] = true;
-						key[KEY_DOWN] = false;
-						key[KEY_LEFT] = false;
-						key[KEY_RIGHT] = false;
-					}
-					pacman.setNextDirection(KEY_UP);
+					game.setCharacterDirection(Character::pacman, Character::UP);
+					game.setCharacterDirection(Character::clyde, Character::UP);
 					break;
 
 				case ALLEGRO_KEY_DOWN:
-					if ( !(key[KEY_LEFT]) && !(key[KEY_RIGHT]) ){
-						key[KEY_DOWN] = true;
-						key[KEY_UP] = false;
-						key[KEY_LEFT] = false;
-						key[KEY_RIGHT] = false;
-					}
-					pacman.setNextDirection(KEY_DOWN);
+					game.setCharacterDirection(Character::pacman, Character::DOWN);
+					game.setCharacterDirection(Character::clyde, Character::DOWN);
 					break;
 
 				case ALLEGRO_KEY_LEFT: 
-					if ( !(key[KEY_UP]) && !(key[KEY_DOWN]) ){
-						key[KEY_LEFT] = true;
-						key[KEY_UP] = false;
-						key[KEY_DOWN] = false;
-						key[KEY_RIGHT] = false;
-					}
-					pacman.setNextDirection(KEY_LEFT);
+					game.setCharacterDirection(Character::pacman, Character::LEFT);
+					game.setCharacterDirection(Character::clyde, Character::LEFT);
 					break;
 
 				case ALLEGRO_KEY_RIGHT:
-					if ( !(key[KEY_UP]) && !(key[KEY_DOWN]) ){
-						key[KEY_RIGHT] = true;
-						key[KEY_UP] = false;
-						key[KEY_DOWN] = false;
-						key[KEY_LEFT] = false;
-					}
-					pacman.setNextDirection(KEY_RIGHT);
+					game.setCharacterDirection(Character::pacman, Character::RIGHT);
+					game.setCharacterDirection(Character::clyde, Character::RIGHT);
 					break;
 
 				case ALLEGRO_KEY_ESCAPE:
@@ -301,7 +186,8 @@ int main(int argc, char **argv){
 			al_clear_to_color(al_map_rgb(0,0,0));
 
 			game.drawMaze();
-			game.drawCharacter(pacman.getPositionX(),pacman.getPositionY(),pacman.getSprite(curFrame,dir));
+			game.drawCharacter(Character::pacman, curFrame);
+			game.drawCharacter(Character::clyde, curFrame);
 			al_draw_text(font, al_map_rgb(255,255,255), 620, 54, ALLEGRO_ALIGN_CENTRE, "SCORE");
 			al_draw_text(font, al_map_rgb(255,255,255), 620, 92, ALLEGRO_ALIGN_CENTRE, to_string(game.getScore()).c_str());
 			al_flip_display();

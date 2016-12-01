@@ -22,7 +22,6 @@ using namespace character;
 Character::Character() {
 	al_init();
 	al_init_image_addon();
-	//sprites[0][0] = al_load_bitmap("resources/sprites/pacmanUp1.png");
 }
 
 Character::Character(string characterName) {
@@ -44,21 +43,33 @@ ALLEGRO_BITMAP * Character::getSprite(int row, int col){
 void Character::setPositionX(unsigned short posX){
 	positionX = posX;
 }
+
 void Character::setPositionY(unsigned short posY){
 	positionY = posY;
 }
+
 void Character::setAlive(bool alive){
 	this->alive = alive;
 }
+
 void Character::setEatable(bool eatable){
 	this->eatable = eatable;
 }
-void Character::setDirection(){
-	
+
+void Character::setDirection(Direction dir){
+	for (unsigned char i = 0; i<4; i++){
+		if (dir == i){
+			direction[i] = true;
+		}
+		else
+			direction[i] = false;
+	}
 }
+
 void Character::setSpeed(float speed){
 	this->speed = speed;
 }
+
 void Character::setNextDirection(unsigned char nextDirection){
 	this->nextDirection = nextDirection;
 }
@@ -89,26 +100,16 @@ string Character::getName(){
 	return characterName;
 }
 
-string Character::getDirection(){
-	string characterDirection;
-	switch (direction){
-		case UP:
-			characterDirection = "up";
-			break;
-			
-		case DOWN:
-			characterDirection = "down";
-			break;
-			
-		case LEFT:
-			characterDirection = "left";
-			break;
-			
-		case RIGHT:
-			characterDirection = "right";
-			break;
+unsigned char Character::getActiveDirection(){
+	for (unsigned char i = 0; i<4; i++){
+		if (direction[i] == true){
+			return i;
+		}
 	}
-	return characterDirection;
+}
+
+bool Character::getDirection(Direction dir){
+	return direction[dir];
 }
 
 float Character::getSpeed(){
@@ -161,7 +162,9 @@ void Character::loadSprites(string characterName){
 	}
 	else if (characterName == "clyde"){
 		this->name = clyde;
-		speed = 6;
+		speed = 3;
+		positionX = 252;
+		positionY = 252;
 		
 		sprites[0][0]= al_load_bitmap("resources/sprites/ghosts/clydeUp1.png");
 		sprites[1][0]= al_load_bitmap("resources/sprites/ghosts/clydeUp2.png");
@@ -179,7 +182,9 @@ void Character::loadSprites(string characterName){
 	}
 	else if (characterName == "blinky"){
 		this->name = blinky;
-		speed = 9;
+		speed = 2;
+		positionX = 270;
+		positionY = 270;
 		
 		sprites[0][0]= al_load_bitmap("resources/sprites/ghosts/blinkyUp1.png");
 		sprites[1][0]= al_load_bitmap("resources/sprites/ghosts/blinkyUp2.png");

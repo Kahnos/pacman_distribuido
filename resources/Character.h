@@ -45,7 +45,8 @@ namespace character {
         virtual ~Character();
         ALLEGRO_BITMAP * getSprite(int row, int col);
         string getName();
-        string getDirection();
+        unsigned char getActiveDirection();
+        bool getDirection(Direction dir);
         unsigned char getNextDirection();
         float getSpeed();
         unsigned short getPositionX();
@@ -57,13 +58,14 @@ namespace character {
         void setPositionY(unsigned short posY);
         void setAlive(bool alive);
         void setEatable(bool eatable);
-        void setDirection();
+        void setDirection(Direction dir);
         void setSpeed(float speed);
         void setNextDirection(unsigned char nextDirection);
+        
 
     private:
         Name name;
-        Direction direction;
+        bool direction[4];
         float speed;
         unsigned short positionX;
         unsigned short positionY;

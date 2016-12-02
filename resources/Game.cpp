@@ -117,6 +117,13 @@ string Game::getStatus(){
 	return status_str;
 }
 
+int Game::getEatableCount(){
+	return eatableCount;
+}
+int Game::setEatableCount(int count){
+	eatableCount = count;
+}
+
 void Game::setLives(unsigned char lives){
 	this->lives = lives;
 }
@@ -321,6 +328,7 @@ void Game::verifyMaze(){
 			maze[row][col] = ' ';
 			score = score + PPPOINTS;
 			setEatableGhosts(true);
+			setEatableCount(0);
 			break;
 		
 		case '.':

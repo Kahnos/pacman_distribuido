@@ -67,6 +67,8 @@ namespace game {
         void move(Character::Name name);
         void setCharacterDirection(Character::Name name,  Character::Direction dir);
         void bounding_box_collision(Character::Name name);
+        int getEatableCount();
+        int setEatableCount(int count);
         
     private:
         ALLEGRO_BITMAP *block;
@@ -80,6 +82,7 @@ namespace game {
         Status status;
         ActivePower activePower;
         Character characters[5];
+        int eatableCount;
         char maze[ROW][COL]= {
 	"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 	"X............XX............X",

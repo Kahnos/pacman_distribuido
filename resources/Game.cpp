@@ -43,6 +43,8 @@ Game::Game(){
 	score = 0;
 	lives = 3;
 	powerbar = 0;
+	pacdotCount = 240;
+	eatableCount = 0;
 	
 	characters[Character::pacman] = Character("pacman");
 	characters[Character::clyde] = Character("clyde");
@@ -120,7 +122,16 @@ string Game::getStatus(){
 int Game::getEatableCount(){
 	return eatableCount;
 }
-int Game::setEatableCount(int count){
+
+unsigned char Game::getPacdotCount(){
+	return pacdotCount;
+}
+
+void Game::setPacdotCount(unsigned char pacdots){
+	pacdotCount = pacdots;
+}
+
+void Game::setEatableCount(int count){
 	eatableCount = count;
 }
 
@@ -162,6 +173,7 @@ void Game::drawMaze(){
 			}
 			if (maze[i][j] == '.'){
 				al_draw_filled_circle((j*SPRITESIZE)+SPRITESIZE/2, (i*SPRITESIZE)+SPRITESIZE/2, 1.5, al_map_rgb(255,255,255));
+				
 			}
 			if (maze[i][j] == 'p'){
 				al_draw_filled_circle((j*SPRITESIZE)+SPRITESIZE/2, (i*SPRITESIZE)+SPRITESIZE/2, 4, al_map_rgb(255,255,255));
@@ -334,6 +346,7 @@ void Game::verifyMaze(){
 		case '.':
 			maze[row][col] = ' ';
 			score = score + PACDOTSPOINTS;
+			setPacdotCount(getPacdotCount()-1);
 			break;
 	}
 	

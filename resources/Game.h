@@ -68,7 +68,9 @@ namespace game {
         void setCharacterDirection(Character::Name name,  Character::Direction dir);
         void bounding_box_collision(Character::Name name);
         int getEatableCount();
-        int setEatableCount(int count);
+        void setEatableCount(int count);
+        unsigned char getPacdotCount();
+        void setPacdotCount(unsigned char pacdots);
         
     private:
         ALLEGRO_BITMAP *block;
@@ -83,6 +85,7 @@ namespace game {
         ActivePower activePower;
         Character characters[5];
         int eatableCount;
+        unsigned char pacdotCount;
         char maze[ROW][COL]= {
 	"XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 	"X............XX............X",

@@ -35,10 +35,10 @@ Game::Game(){
 	al_init_image_addon();
 	
 	block = al_load_bitmap("resources/sprites/roca.bmp");
-	cherry = al_load_bitmap("resources/sprites/fruits/cherry.png");
+	/*cherry = al_load_bitmap("resources/sprites/fruits/cherry.png");
 	apple = al_load_bitmap("resources/sprites/fruits/apple.png");
 	orange = al_load_bitmap("resources/sprites/fruits/orange.png");
-	strawberry = al_load_bitmap("resources/sprites/fruits/strawberry.png");
+	strawberry = al_load_bitmap("resources/sprites/fruits/strawberry.png");*/
 	
 	score = 0;
 	lives = 3;
@@ -53,6 +53,10 @@ Game::Game(){
 }
 
 Game::~Game() {
+}
+
+Character Game::getCharacter(Character::Name name) {
+	return characters[name];
 }
 
 char Game::getMazeCell(int row, int col){
@@ -137,6 +141,10 @@ void Game::setMazeCell(int row, int col, char value){
 	maze[row][col] = value;
 }
 
+/**
+ * Función encargada de dibujar el laberinto.
+ * La 'X' representa un bloque, el '.' un pacdot y la 'p' una powerpellet.
+ */
 void Game::drawMaze(){
 	
 	for (int i = 0; i < ROW; i++){
@@ -151,22 +159,27 @@ void Game::drawMaze(){
 			if (maze[i][j] == 'p'){
 				al_draw_filled_circle((j*SPRITESIZE)+SPRITESIZE/2, (i*SPRITESIZE)+SPRITESIZE/2, 4, al_map_rgb(255,255,255));
 			}
-			if (maze[i][j] == 's'){
+			/*if (maze[i][j] == 's'){
 				al_draw_scaled_bitmap(strawberry, 0, 0, 24, 24,
 					(j*SPRITESIZE), (i*SPRITESIZE), SPRITESIZE, SPRITESIZE, 0);
 			}
 			if (maze[i][j] == 'o'){
 				al_draw_scaled_bitmap(orange, 0, 0, 24, 24,
 					(j*SPRITESIZE), (i*SPRITESIZE), SPRITESIZE, SPRITESIZE, 0);
-			}
+			}*/
 		}
 	}
 	
 }
 
-void Game::drawCharacter(Character::Name name, int curFrame){
-	al_draw_scaled_bitmap(characters[name].getSprite(curFrame, characters[name].getActiveDirection()),
-		0, 0, 24, 24, characters[name].getPositionX(), characters[name].getPositionY(), SPRITESIZE, SPRITESIZE, 0);
+/**
+ * Funci[on encargada de dibujar un personaje
+ * @param name indica el nombre del personaje a dibujar.
+ * @param sprite indica el sprite que se va a mostrar.
+ */
+void Game::drawCharacter(Character::Name name, ALLEGRO_BITMAP *sprite){
+	al_draw_scaled_bitmap( sprite, 0, 0, 24, 24, characters[name].getPositionX(), 
+		characters[name].getPositionY(), SPRITESIZE, SPRITESIZE, 0 );
 }
 
 void Game::setFruit(int row, int col, char f){
@@ -175,6 +188,13 @@ void Game::setFruit(int row, int col, char f){
 	}
 }
 
+/**
+ * 
+ * @param dir
+ * @param posX
+ * @param posY
+ * @return 
+ */
 bool Game::verifyPosition(unsigned char dir, unsigned short posX, unsigned short posY){
 	float base;
 	unsigned short newX;
@@ -230,11 +250,21 @@ bool Game::verifyPosition(unsigned char dir, unsigned short posX, unsigned short
 	return false;
 }
 
-void Game::eatableGhosts(bool eatable){
+void Game::setEatableGhosts(bool eatable){
 	characters[Character::clyde].setEatable(eatable);
 	characters[Character::blinky].setEatable(eatable);
 	characters[Character::pinky].setEatable(eatable);
 	characters[Character::inky].setEatable(eatable);
+}
+bool Game::eatableGhosts(){
+	if (characters[Character::clyde].getEatable() ||
+		characters[Character::blinky].getEatable()|| 
+		characters[Character::pinky].getEatable()|| 
+		characters[Character::inky].getEatable()){
+		
+		return true;
+	}
+	return false;
 }
 
 void Game::verifyMaze(){
@@ -290,7 +320,7 @@ void Game::verifyMaze(){
 		case 'p':
 			maze[row][col] = ' ';
 			score = score + PPPOINTS;
-			eatableGhosts(true);
+			setEatableGhosts(true);
 			break;
 		
 		case '.':
@@ -396,6 +426,11 @@ void Game::move(Character::Name name){
 	
 }
 
+/**
+ * Función que asigna la dirección del personaje.
+ * @param name
+ * @param dir
+ */
 void Game::setCharacterDirection(Character::Name name, Character::Direction dir){
 	switch(dir){
 		case Character::UP:
@@ -428,3 +463,35 @@ void Game::setCharacterDirection(Character::Name name, Character::Direction dir)
 	}
 }
 
+/**
+ * Función que verifica si hay una colisión entre pacman y un fantasma determinado por el parámetro name.
+ * @param name
+ */
+void Game::bounding_box_collision(Character::Name name){
+    if ((characters[Character::pacman].getPositionX() > characters[name].getPositionX() + SPRITESIZE - 1) || // is b1 on the right side of b2?
+        (characters[Character::pacman].getPositionY() > characters[name].getPositionY() + SPRITESIZE - 1) || // is b1 under b2?
+        (characters[name].getPositionX() > characters[Character::pacman].getPositionX() + SPRITESIZE - 1) || // is b2 on the right side of b1?
+        (characters[name].getPositionY() > characters[Character::pacman].getPositionY() + SPRITESIZE - 1))   // is b2 under b1?
+    {
+		cout << "no collision" << endl;
+	}
+        //return false;
+    // collision
+	
+	else if ( !eatableGhosts() ){
+		cout << "collision" << endl;
+		if (lives > 1){
+			characters[Character::pacman].setPositionX(18);
+			characters[Character::pacman].setPositionY(36);
+			lives--;
+		}
+		else{
+			characters[Character::pacman].setAlive(false);
+		}
+	}
+	else if(eatableGhosts()){
+		characters[name].setPositionX(252);
+		characters[name].setPositionY(252);
+	}
+//    return true;	
+}

@@ -44,6 +44,7 @@ namespace game {
         
         Game();
         virtual ~Game();
+        Character getCharacter(Character::Name name);
         unsigned char getLives();
         unsigned short getScore();
         unsigned char getPowerbar();
@@ -58,19 +59,21 @@ namespace game {
         void setMazeCell(int row, int col, char value);
         void setFruit(int row, int col, char f);
         void drawMaze();
-        void drawCharacter(Character::Name name, int curFrame);
+        void drawCharacter(Character::Name name, ALLEGRO_BITMAP *sprite);
         bool verifyPosition(unsigned char dir, unsigned short posX, unsigned short posY);
         void verifyMaze();
-        void eatableGhosts(bool eatable);
+        bool eatableGhosts();
+        void setEatableGhosts(bool eatable);
         void move(Character::Name name);
         void setCharacterDirection(Character::Name name,  Character::Direction dir);
+        void bounding_box_collision(Character::Name name);
         
     private:
         ALLEGRO_BITMAP *block;
-        ALLEGRO_BITMAP *cherry;
+        /*ALLEGRO_BITMAP *cherry;
         ALLEGRO_BITMAP *orange;
         ALLEGRO_BITMAP *apple;
-        ALLEGRO_BITMAP *strawberry;
+        ALLEGRO_BITMAP *strawberry;*/
         unsigned char lives;
         unsigned short score;
         unsigned char powerbar;
